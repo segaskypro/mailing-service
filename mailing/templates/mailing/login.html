@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Вход</title>
+</head>
+<body>
+    <h1>Вход в систему</h1>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <p>
+            <label>Имя пользователя:</label>
+            <input type="text" name="username" required>
+        </p>
+        <p>
+            <label>Пароль:</label>
+            <input type="password" name="password" required>
+        </p>
+        <button type="submit">Войти</button>
+    </form>
+
+    <p>Нет аккаунта? <a href="{% url 'mailing:register' %}">Зарегистрируйтесь</a></p>
+    <p><a href="{% url 'mailing:index' %}">На главную</a></p>
+</body>
+</html>

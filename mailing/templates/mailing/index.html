@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Сервис рассылок</title>
+</head>
+<body>
+    <h1>Сервис управления рассылками</h1>
+
+    <!-- ПРИВЕТСТВИЕ ПОЛЬЗОВАТЕЛЯ -->
+    <p>
+        {% if user.is_authenticated %}
+            <strong>Привет, {{ user.username }}!</strong>
+            <a href="{% url 'mailing:logout' %}">Выйти</a>
+        {% else %}
+            <a href="{% url 'mailing:login' %}">Войти</a> |
+            <a href="{% url 'mailing:register' %}">Зарегистрироваться</a>
+        {% endif %}
+    </p>
+    <!-- КОНЕЦ ПРИВЕТСТВИЯ -->
+
+    <h2>Статистика</h2>
+    <ul>
+        <li>Всего рассылок: {{ total_mailings }}</li>
+        <li>Активных рассылок: {{ active_mailings }}</li>
+        <li>Всего получателей: {{ total_recipients }}</li>
+    </ul>
+
+    <p>
+        <a href="{% url 'mailing:mailing_list' %}">Список рассылок</a> |
+        <a href="/admin">Админка</a>
+    </p>
+</body>
+</html>

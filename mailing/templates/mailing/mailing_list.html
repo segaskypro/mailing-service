@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список рассылок</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            background: white;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .status-created {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .status-running {
+            background-color: #28a745;
+            color: white;
+        }
+        .status-completed {
+            background-color: #6c757d;
+            color: white;
+        }
+        .nav {
+            margin-top: 20px;
+        }
+        .nav a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1> Список рассылок</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Сообщение</th>
+                <th>Начало</th>
+                <th>Конец</th>
+                <th>Статус</th>
+                <th>Получателей</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mailing in mailings %}
+            <tr>
+                <td>{{ mailing.id }}</td>
+                <td>{{ mailing.message.subject }}</td>
+                <td>{{ mailing.start_time|date:"d.m.Y H:i" }}</td>
+                <td>{{ mailing.end_time|date:"d.m.Y H:i" }}</td>
+                <td>
+                    {% with status=mailing.get_status %}
+                    <span class="status
+                        {% if status == 'Создана' %}status-created
+                        {% elif status == 'Запущена' %}status-running
+                        {% else %}status-completed{% endif %}">
+                        {{ status }}
+                    </span>
+                    {% endwith %}
+                </td>
+                <td>{{ mailing.recipients.count }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 30px;">
+                    Нет созданных рассылок
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="nav">
+        <a href="{% url 'mailing:index' %}"> На главную</a>
+    </div>
+</body>
+</html>
