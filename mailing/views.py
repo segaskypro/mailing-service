@@ -3,10 +3,12 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from .models import Recipient, Mailing
 from .forms import RegisterForm
+from django.views.decorators.cache import cache_page
 
 
+@cache_page(60 * 15)
 def index(request):
-    """Главная страница со статистикой"""
+    """Главная страница со статистикой (с кешированием)"""
     total_mailings = Mailing.objects.count()
 
     active_mailings = 0
@@ -24,15 +26,18 @@ def index(request):
     return render(request, 'mailing/index.html', context)
 
 
-
 @login_required
 def mailing_list(request):
-    """Список всех рассылок (только свои)"""
-    mailings = Mailing.objects.all()
+    """Список рассылок (фильтрация по владельцу)"""
+    user = request.user
+
+
+    if is_manager(user):
+        mailings = Mailing.objects.all()
+    else:
+        mailings = Mailing.objects.filter(owner=user)
+
     return render(request, 'mailing/mailing_list.html', {'mailings': mailings})
-
-
-
 
 def register(request):
     """Регистрация нового пользователя"""

@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
+
 
 
 class Recipient(models.Model):
@@ -67,6 +69,13 @@ class Mailing(models.Model):
     recipients = models.ManyToManyField(
         Recipient,
         verbose_name="Получатели"
+    )
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Владелец",
+        null=True,
+        blank=True
     )
 
     def __str__(self):

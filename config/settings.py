@@ -139,3 +139,10 @@ CACHES = {
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@mailing.com'
+
+
+PASSWORD_RESET_TIMEOUT = 86400  # 24 часа

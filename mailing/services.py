@@ -7,6 +7,7 @@ from .models import Attempt
 def send_mailing(mailing_id):
     """
     Функция для отправки рассылки по её ID.
+    Использует bulk_create для массового создания попыток.
     """
     from .models import Mailing
 
@@ -20,9 +21,6 @@ def send_mailing(mailing_id):
     now = timezone.now()
     if not (mailing.start_time <= now <= mailing.end_time):
         print(f"Ошибка: Рассылка {mailing_id} не активна в данный момент")
-        print(f"  - start_time: {mailing.start_time}")
-        print(f"  - end_time: {mailing.end_time}")
-        print(f"  - сейчас: {now}")
         return
 
     # 2. Получаем всех получателей
@@ -35,7 +33,9 @@ def send_mailing(mailing_id):
     print(f"Сообщение: {mailing.message.subject}")
     print(f"Получателей: {recipients.count()}")
 
-    # 3. Отправляем каждому получателю
+    # 3. Собираем данные для массового создания попыток
+    attempts_to_create = []
+
     for recipient in recipients:
         try:
             # Отправляем письмо
@@ -47,21 +47,30 @@ def send_mailing(mailing_id):
                 fail_silently=False,
             )
 
-            # Создаём запись об успешной попытке
-            Attempt.objects.create(
-                status='Успешно',
-                server_response='Письмо отправлено успешно',
-                mailing=mailing
+            # Готовим запись об успешной попытке (НО пока не сохраняем!)
+            attempts_to_create.append(
+                Attempt(
+                    status='Успешно',
+                    server_response='Письмо отправлено успешно',
+                    mailing=mailing
+                )
             )
             print(f" Письмо отправлено на {recipient.email}")
 
         except Exception as e:
-            # Создаём запись о неудачной попытке
-            Attempt.objects.create(
-                status='Не успешно',
-                server_response=str(e),
-                mailing=mailing
+            # Готовим запись о неудачной попытке
+            attempts_to_create.append(
+                Attempt(
+                    status='Не успешно',
+                    server_response=str(e),
+                    mailing=mailing
+                )
             )
             print(f" Ошибка при отправке на {recipient.email}: {e}")
+
+    # 4. ОДНИМ ЗАПРОСОМ сохраняем все попытки в БД (batch-операция!)
+    if attempts_to_create:
+        Attempt.objects.bulk_create(attempts_to_create)
+        print(f"Сохранено {len(attempts_to_create)} попыток в БД")
 
     print(f"Рассылка {mailing_id} завершена")

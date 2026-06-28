@@ -6,6 +6,7 @@
 <body>
     <h1>Вход в систему</h1>
 
+
     {% if error %}
         <p style="color: red;">{{ error }}</p>
     {% endif %}
@@ -22,6 +23,11 @@
         </p>
         <button type="submit">Войти</button>
     </form>
+
+
+    <p>
+        <a href="{% url 'password_reset' %}">Забыли пароль?</a>
+    </p>
 
     <p>Нет аккаунта? <a href="{% url 'mailing:register' %}">Зарегистрируйтесь</a></p>
     <p><a href="{% url 'mailing:index' %}">На главную</a></p>
