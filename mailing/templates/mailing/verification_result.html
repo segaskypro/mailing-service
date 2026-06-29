@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Подтверждение email</title>
+</head>
+<body>
+    <h1>{% if success %} Email подтверждён{% else %} Ошибка подтверждения{% endif %}</h1>
+    <p>{{ message }}</p>
+    {% if success %}
+        <p>Теперь вы можете <a href="{% url 'mailing:login' %}">войти</a> в систему.</p>
+    {% else %}
+        <p>Попробуйте <a href="{% url 'mailing:register' %}">зарегистрироваться</a> снова.</p>
+    {% endif %}
+    <p><a href="{% url 'mailing:index' %}">На главную</a></p>
+</body>
+</html>

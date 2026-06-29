@@ -137,3 +137,18 @@ class Attempt(models.Model):
     class Meta:
         verbose_name = "Попытка"
         verbose_name_plural = "Попытки"
+
+
+class EmailVerification(models.Model):
+    """Модель для хранения токенов подтверждения email"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_expired(self):
+        """Токен действителен 24 часа"""
+        from django.utils import timezone
+        return (timezone.now() - self.created_at).days >= 1
+
+    def __str__(self):
+        return f"Токен для {self.user.email}"
